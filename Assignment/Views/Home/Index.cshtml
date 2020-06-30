@@ -1,0 +1,86 @@
+﻿@using Assignment.Core.Domain
+@using Microsoft.AspNetCore.Razor.Language.Intermediate
+@model Assignment.ViewModels.HomeViewModel
+
+<br/>
+<div class="container row p-0 m-0">
+    <div class="col-12 bg-secondary">
+        <h3 class="text-info text-light">Content Limits for Fire/Flood/Theft Coverage</h3>
+    </div>
+    <div class="col-12 border p-3">
+        <table id="categories_table" class="table table-striped table-bordered" style="width: 100%">
+            <tr class="table-secondary">
+                <th>Category</th>
+                <th>Total Limits</th>
+                <th></th>
+            </tr>
+            @foreach (var category in Model.Categories)
+            {
+                <tr id="@category.Id" class="parent" title="Click to expand/collapse" style="cursor: pointer;">
+                    <td width="85%">
+                        @Html.DisplayFor(m => category.Description)
+                    </td>
+                    <td width="10%">
+                        $@Html.DisplayFor(m => category.Limits)
+                    </td>
+                    <td width="5%"></td>
+                </tr>
+                @foreach (var item in category.Items)
+                {
+                    <tr class="@item.Pid" style="display: table-row;">
+                        <td width="85%">
+                            @Html.DisplayFor(m => category.Description) -
+                            @Html.DisplayFor(m => item.Description)
+                        </td>
+                        <td width="10%">
+                            $@Html.DisplayFor(m => item.Limit)
+                        </td>
+                        <td width="5%">
+                            <form method="post">
+                                <button type="submit" class="btn btn-outline-danger form-control"
+                                        asp-action="RemoveItem" asp-route-id="@item.Id">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            }
+        </table>
+        <div class="row">
+            <div class="col-10"></div>
+            <div class="col-2">
+                <p class="h6"><b>TOTAL $@Model.SumOfAllLimits</b></p>
+            </div>
+        </div>
+        <form method="post" asp-action="AddItem">
+            <div class="text-danger" asp-validation-summary="ModelOnly"></div>
+            <div class="form-group row">
+                <div class="col">
+                    <input asp-for="NewItemDesc" class="form-control" data-toggle="tooltip"
+                           data-placement="right" title="Enter a new item here" />
+                    <span asp-validation-for="NewItemDesc" class="text-danger"></span>
+                </div>
+                <div class="col">
+                    <input asp-for="NewItemLimit" class="form-control" data-toggle="tooltip"
+                           data-placement="right" title="Enter the item's limit here" />
+                    <span asp-validation-for="NewItemLimit" class="text-danger"></span>
+                </div>
+                <div class="col">
+                    <select class="btn btn-secondary dropdown-toggle" data-toggle="dropdown"
+                            asp-for="NewCategoryType" asp-items="Html.GetEnumSelectList<CategoryType>()">
+                    </select>
+                </div>
+                <div class="col">
+                    <button type="submit" class="btn btn-secondary form-control">
+                        Add
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts{ 
+    <script src="~/js/rowtoggler.js"></script>
+}
